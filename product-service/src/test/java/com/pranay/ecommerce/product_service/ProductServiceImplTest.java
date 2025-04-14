@@ -13,11 +13,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -95,5 +97,88 @@ public class ProductServiceImplTest {
 
         assertEquals("MacBook", result.getName());
         verify(productRepository).save(any(Product.class));
+    }
+
+    @Test
+    void shouldReturnListOfActiveProducts_whenGetAllProductsCalled() {
+
+        Product activeProduct = new Product();
+        activeProduct.setId(1L);
+        activeProduct.setName("phone");
+        activeProduct.setActive(true);
+
+        Product inactiveProduct = new Product();
+        inactiveProduct.setId(2L);
+        inactiveProduct.setName("tablet");
+        inactiveProduct.setActive(false);
+
+        when(productRepository.findByActiveTrue()).thenReturn(List.of(activeProduct));
+        when(modelMapper.map(any(Product.class), eq(ProductResponse.class)))
+                .thenAnswer(invocation -> {
+                    Product p = invocation.getArgument(0);
+                    ProductResponse pr = new ProductResponse();
+                    pr.setId(p.getId());
+                    pr.setName(p.getName());
+                    return pr;
+                });
+
+        List<ProductResponse> productResponses = productService.getAllProducts();
+
+        assertEquals(1, productResponses.size());
+        assertEquals("phone", productResponses.get(0).getName());
+    }
+
+    @Test
+    void shouldReturnProduct_whenProductExistsById() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("MacBook");
+        product.setCategory("Laptop");
+
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(modelMapper.map(any(Product.class), eq(ProductResponse.class)))
+                .thenAnswer(invocation -> {
+                    Product p = invocation.getArgument(0);
+                    ProductResponse pr = new ProductResponse();
+                    pr.setId(p.getId());
+                    pr.setName(p.getName());
+                    pr.setDescription(p.getDescription());
+                    pr.setPrice(p.getPrice());
+                    pr.setStockQuantity(p.getStockQuantity());
+                    pr.setCategory(p.getCategory());
+                    pr.setImageUrl(p.getImageUrl());
+                    pr.setActive(p.getActive());
+                    return pr;
+                });
+
+        ProductResponse result = productService.getProductById(1L);
+
+        assertEquals(1L, result.getId());
+        assertEquals("MacBook", result.getName());
+        assertEquals("Laptop", result.getCategory());
+    }
+
+    @Test
+    void shouldReturnProduct_whenProductExistsById2() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("iPad Pro 11th gen");
+
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(modelMapper.map(product, ProductResponse.class))
+                .thenReturn(new ProductResponse(1L, "iPad Pro 11th gen"));
+
+        ProductResponse result = productService.getProductById(1L);
+
+        assertEquals(1L, result.getId());
+        assertEquals("iPad Pro 11th gen", result.getName());
+    }
+
+    @Test
+    void shouldThrowException_whenProductNotFoundById() {
+        when(productRepository.findById(34L)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, () ->
+                productService.getProductById(34L));
     }
 }
