@@ -74,6 +74,78 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.junit</groupId>
+			<artifactId>junit-bom</artifactId>
+			<version>5.10.1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+
+		<!-- ✅ JUnit 5 -->
+<!--		<dependency>-->
+<!--			<groupId>org.junit.jupiter</groupId>-->
+<!--			<artifactId>junit-jupiter-api</artifactId>-->
+<!--			<version>5.12.1</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+
+<!--		&lt;!&ndash; ✅ JUnit Engine (to run tests) &ndash;&gt;-->
+<!--		&lt;!&ndash; https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.junit.jupiter</groupId>-->
+<!--			<artifactId>junit-jupiter-engine</artifactId>-->
+<!--			<version>5.12.1</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+
+		<!-- JUnit 5 Dependencies -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+<!--			<version>5.7.0</version> &lt;!&ndash; Use the correct version &ndash;&gt;-->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+<!--			<version>5.7.0</version> &lt;!&ndash; Use the correct version &ndash;&gt;-->
+			<scope>test</scope>
+		</dependency>
+
+		<!-- ✅ Mockito core -->
+<!--		<dependency>-->
+<!--			<groupId>org.mockito</groupId>-->
+<!--			<artifactId>mockito-core</artifactId>-->
+<!--			<version>5.12.0</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+
+<!--		&lt;!&ndash; ✅ Mockito + JUnit 5 integration &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.mockito</groupId>-->
+<!--			<artifactId>mockito-junit-jupiter</artifactId>-->
+<!--			<version>5.12.0</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+
+		<!-- Mockito Dependencies -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.7.7</version> <!-- Use latest compatible version -->
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Mockito JUnit Jupiter Dependency for JUnit 5 integration -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<version>3.7.7</version> <!-- Use latest compatible version -->
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -92,6 +164,14 @@
 							<artifactId>lombok</artifactId>
 						</path>
 					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<configuration>
+					<provider>junit-jupiter</provider>
 				</configuration>
 			</plugin>
 			<plugin>
