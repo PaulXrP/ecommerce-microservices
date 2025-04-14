@@ -19,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> searchProduct(@Param("keyword") String keyword);
 
     Optional<Product> findByIdAndActiveTrue(Long id);
+
+    Optional<Product> findByName(String name);
 }

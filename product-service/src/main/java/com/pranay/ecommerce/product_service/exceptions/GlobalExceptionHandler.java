@@ -33,4 +33,10 @@ public class GlobalExceptionHandler {
         ApiResponse response = new ApiResponse("An error occurred: " + ex.getMessage(), false);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(DuplicateProductException.class)
+    public ResponseEntity<ApiResponse> duplicateProductExceptionHandler(DuplicateProductException ex) {
+        ApiResponse response = new ApiResponse(ex.getMessage(), false);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

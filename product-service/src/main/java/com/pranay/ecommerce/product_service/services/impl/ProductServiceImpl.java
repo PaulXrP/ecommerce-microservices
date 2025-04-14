@@ -25,6 +25,25 @@ public class ProductServiceImpl implements ProductService {
     private final ModelMapper modelMapper;
 
     public ProductResponse createProduct(ProductRequest productRequest) {
+
+        Optional<Product> existingProductOpt = productRepository.findByName(productRequest.getName());
+
+        if(existingProductOpt.isPresent()) {
+            Product existingProduct = existingProductOpt.get();
+
+            if(Boolean.TRUE.equals(existingProduct.getActive())) {
+                throw new ProductNotFoundException("Product with name " + existingProduct.getName() +
+                        " already exist in database");
+            }
+
+            // Reactivate and update the existing product
+            updateProductFromRequest(existingProduct, productRequest);
+            existingProduct.setActive(true);
+            Product updatedProduct = productRepository.save(existingProduct);
+            return modelMapper.map(updatedProduct,ProductResponse.class);
+        }
+
+        // No existing product — create new
         Product product = new Product();
         updateProductFromRequest(product, productRequest);
         Product savedProduct = productRepository.save(product);
