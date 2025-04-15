@@ -16,8 +16,7 @@ import org.modelmapper.ModelMapper;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -180,5 +179,28 @@ public class ProductServiceImplTest {
 
         assertThrows(ProductNotFoundException.class, () ->
                 productService.getProductById(34L));
+    }
+
+    @Test
+    void shouldMarkProductAsInactive_whenDeleteProductCalled() {
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("iPhone");
+        product.setActive(true);
+
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
+        productService.deleteProduct(1L);
+
+        assertFalse(product.getActive());
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void shouldThrowException_whenDeletingNonExistentProduct() {
+        when(productRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class,
+                () -> productService.deleteProduct(2L));
     }
 }
