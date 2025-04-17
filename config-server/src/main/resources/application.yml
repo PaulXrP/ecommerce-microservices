@@ -1,0 +1,23 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+
+  profiles:
+    active: native
+
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///Users/pranaypaul/Desktop/Pranay's Codes/Spring Boot/ecommerce-microservices/config-repo
+
+
+# Optional but helpful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

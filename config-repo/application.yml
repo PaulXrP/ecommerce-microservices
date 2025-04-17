@@ -1,3 +1,16 @@
 spring:
   application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///Users/pranaypaul/Desktop/Pranay Codes/Spring Boot/ecommerce-microservices/config-repo
+server:
+  port: 8888
+
+
+
+
+
 
