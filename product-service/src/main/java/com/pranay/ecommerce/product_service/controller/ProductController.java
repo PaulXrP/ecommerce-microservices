@@ -3,6 +3,8 @@ package com.pranay.ecommerce.product_service.controller;
 import com.pranay.ecommerce.product_service.Dtos.ApiResponse;
 import com.pranay.ecommerce.product_service.Dtos.ProductRequest;
 import com.pranay.ecommerce.product_service.Dtos.ProductResponse;
+import com.pranay.ecommerce.product_service.exceptions.ProductNotFoundException;
+import com.pranay.ecommerce.product_service.models.Product;
 import com.pranay.ecommerce.product_service.repositories.ProductRepository;
 import com.pranay.ecommerce.product_service.services.interfaces.ProductService;
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @PostMapping()
     public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductRequest productRequest) {
@@ -43,6 +46,22 @@ public class ProductController {
                                                          @PathVariable Long id) {
         ProductResponse updatedProduct = productService.updateProduct(id, productRequest);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+    }
+
+    @PutMapping("/decrease-stock/{productId}")
+    public ResponseEntity<?> decreaseStock(@PathVariable Long productId,
+                                           @RequestParam int quantity) {
+        Product product = productRepository.findByIdAndActiveTrue(productId).orElseThrow(() ->
+                new ProductNotFoundException("Product not found or inactive with ID: " + productId));
+
+        if(product.getStockQuantity() < quantity) {
+            return ResponseEntity.badRequest().body("Insufficient stock for product: " + product.getName());
+        }
+
+        product.setStockQuantity(product.getStockQuantity() - quantity);
+        productRepository.save(product);
+        return ResponseEntity.ok("Stock updated for product: " + product.getName());
+
     }
 
     @DeleteMapping("/{id}")

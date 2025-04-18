@@ -12,6 +12,7 @@ import com.pranay.ecommerce.order_service.models.OrderItem;
 import com.pranay.ecommerce.order_service.models.OrderStatus;
 import com.pranay.ecommerce.order_service.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
     private final OrderRepository orderRepository;
     private final CartService cartService;
@@ -55,6 +57,9 @@ public class OrderService {
                         + item.getProductId()); //cant place order
             }
 
+            //  Deduct stock
+            productServiceClient.decreaseStock(productDetails.getId(), item.getQuantity());
+
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(item.getProductId());
             orderItem.setQuantity(item.getQuantity());
@@ -65,6 +70,11 @@ public class OrderService {
             //sum up total price
             BigDecimal itemTotal = productDetails.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
+
+            System.out.println("Stock decreased for productId: " + item.getProductId() + " by quantity: " + item.getQuantity());
+
+            log.info("Product stock updated: productId={}, deductedQuantity={}, userId={}",
+                    item.getProductId(), item.getQuantity(), userId);
         }
 
         //save order
