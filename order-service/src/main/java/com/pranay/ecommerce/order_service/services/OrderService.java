@@ -28,7 +28,7 @@ public class OrderService {
     private final CartService cartService;
     private final ProductServiceClient productServiceClient;
     private final UserServiceClient userServiceClient;
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public OrderResponse createOrder(String userId) {
         //validate cart items
@@ -64,7 +64,7 @@ public class OrderService {
 
             //sum up total price
             BigDecimal itemTotal = productDetails.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
-            totalAmount.add(itemTotal);
+            totalAmount = totalAmount.add(itemTotal);
         }
 
         //save order

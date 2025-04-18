@@ -8,6 +8,6 @@ import org.springframework.web.service.annotation.HttpExchange;
 @HttpExchange
 public interface UserServiceClient {
 
-    @GetExchange("/api/users/{id}")
+    @GetExchange("/api/user/find/{id}")
     UserResponse getUserDetails(@PathVariable String id);
 }

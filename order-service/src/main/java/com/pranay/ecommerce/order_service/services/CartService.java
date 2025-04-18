@@ -9,6 +9,7 @@ import com.pranay.ecommerce.order_service.models.CartItem;
 import com.pranay.ecommerce.order_service.repositories.CartItemRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class CartService {
     private final CartItemRepository cartItemRepository;
     private final ProductServiceClient productServiceClient;
@@ -29,8 +31,10 @@ public class CartService {
             return false;
 
         UserResponse userDetails = userServiceClient.getUserDetails(userId);
-        if(userDetails == null)
+        if(userDetails == null || userDetails.getId()==null) {
+            log.info("User details: {}", userDetails);
             return false;
+        }
 
         CartItem existingCartItem = cartItemRepository.findByUserIdAndProductId(userId, request.getProductId());
         if(existingCartItem != null) {
@@ -53,7 +57,7 @@ public class CartService {
         return true;
     }
 
-    public boolean deleteItemFromCart(String userId, String productId) {
+    public boolean deleteItemFromCart(String userId, Long productId) {
         CartItem cartItem = cartItemRepository.findByUserIdAndProductId(userId, productId);
 
         if(cartItem != null) {

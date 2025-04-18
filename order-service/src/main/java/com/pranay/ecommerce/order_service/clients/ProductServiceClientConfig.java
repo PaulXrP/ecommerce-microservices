@@ -13,7 +13,7 @@ import java.util.Optional;
 @Configuration
 public class ProductServiceClientConfig {
 
-
+    @Bean
     public ProductServiceClient productServiceInterface(RestClient.Builder restClientBuilder) {
          RestClient restClient = restClientBuilder
                  .baseUrl("http://product-service")

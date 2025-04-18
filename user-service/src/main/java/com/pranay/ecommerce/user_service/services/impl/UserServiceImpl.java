@@ -3,6 +3,7 @@ package com.pranay.ecommerce.user_service.services.impl;
 import com.pranay.ecommerce.user_service.dto.AddressDto;
 import com.pranay.ecommerce.user_service.dto.UserRequest;
 import com.pranay.ecommerce.user_service.dto.UserResponse;
+import com.pranay.ecommerce.user_service.exceptions.UserNotFoundException;
 import com.pranay.ecommerce.user_service.models.Address;
 import com.pranay.ecommerce.user_service.models.User;
 import com.pranay.ecommerce.user_service.repository.UserRepository;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     public UserResponse findUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("User with given id not found..."));
+                new UserNotFoundException("User with given id not found..." + id));
 
         return modelMapper.map(user, UserResponse.class);
     }
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     public String updateUser(Long id, UserRequest updatedUserRequest) {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new RuntimeException("User with given id not found...."));
+                new UserNotFoundException("User with given id not found...."));
         updateUserFromRequest(user, updatedUserRequest);
         userRepository.save(user);
         return "User updated successfully....";
