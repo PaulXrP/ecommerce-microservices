@@ -5,6 +5,7 @@ import com.pranay.ecommerce.order_service.clients.UserServiceClient;
 import com.pranay.ecommerce.order_service.dtos.CartItemRequest;
 import com.pranay.ecommerce.order_service.dtos.ProductResponse;
 import com.pranay.ecommerce.order_service.dtos.UserResponse;
+import com.pranay.ecommerce.order_service.exceptions.InsufficientStockException;
 import com.pranay.ecommerce.order_service.models.CartItem;
 import com.pranay.ecommerce.order_service.repositories.CartItemRepository;
 import jakarta.transaction.Transactional;
@@ -27,12 +28,23 @@ public class CartService {
     public boolean addToCart(String userId, CartItemRequest request) {
        //Look for product
         ProductResponse productDetails = productServiceClient.getProductDetails(request.getProductId());
-        if(productDetails == null || productDetails.getStockQuantity() < request.getQuantity())
-            return false;
+//        if(productDetails == null || productDetails.getStockQuantity() < request.getQuantity())
+        if (productDetails == null ||
+            productDetails.getStockQuantity() == null ||
+            request.getQuantity() == null ) {
+            log.warn("Invalid product or insufficient stock: {}", productDetails);
+//            return false;
+            throw new InsufficientStockException("Product information is incomplete or missing stock details.");
+
+        }
+
+        if(productDetails.getStockQuantity().compareTo(request.getQuantity()) < 0) {
+            throw new InsufficientStockException("Insufficient stock for product ID: " + request.getProductId());
+        }
 
         UserResponse userDetails = userServiceClient.getUserDetails(userId);
         if(userDetails == null || userDetails.getId()==null) {
-            log.info("User details: {}", userDetails);
+            log.warn("Invalid user: {}", userDetails);
             return false;
         }
 
